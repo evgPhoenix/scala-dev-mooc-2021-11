@@ -43,11 +43,10 @@ object task_collections extends App {
   def numbersToNumericString(text: String): String = {
 
     val input =  ("""\d+""".r findAllIn text).toList
-    println(s"input = $input")
     import java.text.DecimalFormat
     val tensNames = Array("", " ten", " twenty", " thirty", " forty", " fifty", " sixty", " seventy", " eighty", " ninety")
-
-    val numNames = Array("", " one", " two", " three", " four", " five", " six", " seven", " eight", " nine", " ten", " eleven", " twelve", " thirteen", " fourteen", " fifteen", " sixteen", " seventeen", " eighteen", " nineteen")
+    val numNames = Array("", " one", " two", " three", " four", " five", " six", " seven", " eight", " nine", " ten",
+      " eleven", " twelve", " thirteen", " fourteen", " fifteen", " sixteen", " seventeen", " eighteen", " nineteen")
 
     def convertLessThanOneThousand(number: Int): String = {
       val (soFar, num) = if (number % 100 < 20) {
@@ -81,7 +80,6 @@ object task_collections extends App {
         val mask = "000000000000"
         val df = new DecimalFormat(mask)
         val snumber = df.format(number)
-        println(s"sNumber = $snumber")
         // XXXnnnnnnnnn
         val billions = snumber.substring(0, 3).toInt
         // nnnXXXnnnnnn
