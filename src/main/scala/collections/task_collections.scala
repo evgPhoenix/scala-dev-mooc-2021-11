@@ -50,17 +50,13 @@ object task_collections extends App {
     val numNames = Array("", " one", " two", " three", " four", " five", " six", " seven", " eight", " nine", " ten", " eleven", " twelve", " thirteen", " fourteen", " fifteen", " sixteen", " seventeen", " eighteen", " nineteen")
 
     def convertLessThanOneThousand(number: Int): String = {
-      var soFar = ""
-      var num = number
-      if (number % 100 < 20) {
-        soFar = numNames(number % 100)
-        num = number / 100
-      }
-      else {
-        soFar = numNames(number % 10)
-        num = number / 10
-        soFar = tensNames(number % 10) + soFar
-        num = number / 10
+      val (soFar, num) = if (number % 100 < 20) {
+        (numNames(number % 100), number / 100)
+      } else {
+        val soFar0 = numNames(number % 10)
+        val soFar = tensNames(number % 10) + soFar0
+        val num = number / 10
+        (soFar, num)
       }
       if (num == 0) {
         soFar
@@ -69,14 +65,23 @@ object task_collections extends App {
 
 
     def convert(number: Long): String = { // 0 to 999 999 999 999
+      def getNumberPart(number: Int, decimalName: String) = {
+        number match {
+          case 0 => ""
+          case 1 => convertLessThanOneThousand(number) + decimalName
+          case _ => convertLessThanOneThousand(number) + decimalName
+        }
+      }
+
       if (number == 0) {
         "zero"
       } else {
-        var snumber = number.toString
         // pad with "0"
+        val result = new StringBuilder()
         val mask = "000000000000"
         val df = new DecimalFormat(mask)
-        snumber = df.format(number)
+        val snumber = df.format(number)
+        println(s"sNumber = $snumber")
         // XXXnnnnnnnnn
         val billions = snumber.substring(0, 3).toInt
         // nnnXXXnnnnnn
@@ -85,47 +90,12 @@ object task_collections extends App {
         val hundredThousands = snumber.substring(6, 9).toInt
         // nnnnnnnnnXXX
         val thousands = snumber.substring(9, 12).toInt
-        var tradBillions = ""
-        billions match {
-          case 0 =>
-            tradBillions = ""
-
-          case 1 =>
-            tradBillions = convertLessThanOneThousand(billions) + " billion "
-
-          case _ =>
-            tradBillions = convertLessThanOneThousand(billions) + " billion "
-        }
-        var result = tradBillions
-        var tradMillions = ""
-        millions match {
-          case 0 =>
-            tradMillions = ""
-
-          case 1 =>
-            tradMillions = convertLessThanOneThousand(millions) + " million "
-
-          case _ =>
-            tradMillions = convertLessThanOneThousand(millions) + " million "
-        }
-        result = result + tradMillions
-        var tradHundredThousands = ""
-        hundredThousands match {
-          case 0 =>
-            tradHundredThousands = ""
-
-          case 1 =>
-            tradHundredThousands = "one thousand "
-
-          case _ =>
-            tradHundredThousands = convertLessThanOneThousand(hundredThousands) + " thousand "
-        }
-        result = result + tradHundredThousands
-        var tradThousand = ""
-        tradThousand = convertLessThanOneThousand(thousands)
-        result = result + tradThousand
+        result.append(getNumberPart(billions, " billion "))
+        result.append(getNumberPart(millions, " million "))
+        result.append(getNumberPart(hundredThousands, " thousand "))
+        result.append(convertLessThanOneThousand(thousands))
         // remove extra spaces!
-        result.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ")
+        result.toString.replaceAll("^\\s+", "").replaceAll("\\b\\s{2,}\\b", " ")
       }
     }
 
