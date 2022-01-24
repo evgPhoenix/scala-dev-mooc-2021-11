@@ -1,6 +1,5 @@
 package module2
 
-import module1.list
 
 object type_classes {
 
